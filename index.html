@@ -9,7 +9,6 @@
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     
     <style>
-        /* UI สำหรับการโต้ตอบ (เกณฑ์ที่ 3 และ 4) */
         .ui-container {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 8px; z-index: 1000; width: 95%; justify-content: center;
@@ -26,7 +25,6 @@
             background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; z-index: 1000;
             text-align: center; pointer-events: none; font-family: sans-serif;
         }
-        /* สถานะกำลังโหลด */
         #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #222; color: white; display: flex; align-items: center;
@@ -47,7 +45,7 @@
     <div class="ui-container">
         <button onclick="switchInstrument('piano')">🎹<br>Piano</button>
         <button onclick="switchInstrument('guitar')">🎸<br>Guitar</button>
-        <button onclick="switchInstrument('drum')">🎺<br>Trumpet</button>
+        <button onclick="switchInstrument('trumpet')">🎺<br>Trumpet</button>
     </div>
 
     <a-scene 
@@ -59,16 +57,16 @@
         <a-assets timeout="10000">
             <a-asset-item id="piano-model" src="piano.glb"></a-asset-item>
             <a-asset-item id="guitar-model" src="guitar.glb"></a-asset-item>
-            <a-asset-item id="drum-model" src="trumpet.glb"></a-asset-item>
+            <a-asset-item id="trumpet-model" src="trumpet.glb"></a-asset-item>
         </a-assets>
         
         <a-marker preset="hiro">
-            <a-entity light="type: ambient; intensity: 1.2;"></a-entity>
+            <a-entity light="type: ambient; intensity: 1.5;"></a-entity>
             <a-entity light="type: directional; intensity: 0.8;" position="1 2 1"></a-entity>
 
-            <a-entity id="piano-group" visible="false"
+            <a-entity id="piano-group" visible="true"
                 gltf-model="#piano-model"
-                position="0 0 0" 
+                position="0 0.1 0" 
                 scale="0.2 0.2 0.2"
                 animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear">
             </a-entity>
@@ -77,13 +75,14 @@
                 gltf-model="#guitar-model"
                 position="0 0.5 0" 
                 scale="0.6 0.6 0.6"
-                rotation="0 0 0">
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear">
             </a-entity>
 
-            <a-entity id="Trumpet-group" visible="false"
-                gltf-model="#Trumpet-model"
-                position="0 0 0" 
-                scale="0.3 0.3 0.3">
+            <a-entity id="trumpet-group" visible="false"
+                gltf-model="#trumpet-model"
+                position="0 0.2 0" 
+                scale="0.5 0.5 0.5"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear">
             </a-entity>
         </a-marker>
 
@@ -91,33 +90,32 @@
     </a-scene>
 
     <script>
-        // ปิดหน้าจอโหลดเมื่อ Assets พร้อม
         document.querySelector('a-scene').addEventListener('loaded', function () {
             document.getElementById('loading-screen').style.display = 'none';
         });
 
-        // ข้อมูลประกอบการพรีเซนต์ (เกณฑ์ที่ 5)
         const instruments = {
             piano: { title: "🎹 Piano", desc: "เครื่องลิ่มนิ้วที่สร้างเสียงด้วยการค้อนเคาะสาย" },
             guitar: { title: "🎸 Guitar", desc: "เครื่องสายที่ใช้การดีดหรือใช้นิ้วกรีดสาย" },
-            drum: { title: "🎺 Trumpet", desc: "เครื่องเป่าทองเหลืองที่มีเสียงกังวานและทรงพลัง" }
+            trumpet: { title: "🎺 Trumpet", desc: "เครื่องเป่าทองเหลืองที่มีเสียงกังวานและทรงพลัง" }
         };
 
         function switchInstrument(type) {
-            // ปิดตัวอื่น เปิดตัวที่เลือก
+            // ปิดทุกตัว
             document.querySelector('#piano-group').setAttribute('visible', 'false');
             document.querySelector('#guitar-group').setAttribute('visible', 'false');
-            document.querySelector('#Trumpet-group').setAttribute('visible', 'false');
+            document.querySelector('#trumpet-group').setAttribute('visible', 'false');
+            
+            // เปิดตัวที่เลือก
             document.querySelector(`#${type}-group`).setAttribute('visible', 'true');
 
-            // เปลี่ยนข้อความบนจอ
+            // อัปเดตข้อความ
             document.getElementById('inst-title').innerText = instruments[type].title;
             document.getElementById('inst-desc').innerText = instruments[type].desc;
         }
 
-        // ตรวจสอบกล้อง
         navigator.mediaDevices.getUserMedia({ video: true }).catch(err => {
-            alert("ไม่สามารถเข้าถึงกล้องได้: โปรดใช้ HTTPS และกดอนุญาตกล้อง");
+            alert("กรุณาใช้ HTTPS และกดอนุญาตกล้องเพื่อใช้งาน AR");
         });
     </script>
 </body>
